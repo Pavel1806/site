@@ -183,29 +183,42 @@ document.addEventListener('DOMContentLoaded', ()=>{
           	}
           }
 
-          new ProductCard(
-          	"img/tabs/vegy.jpg", 
-          	"vegy",
-          	'Меню "Фитнес"',
-          	'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-          	229
-          	).render();
+		  const getDataCard = async (url) => {
+			const res = await fetch(url);
+				if(!res.ok){
+					throw new Error(`Не прошел fetch по ${url} статус ${res.status}`);
+				}
+			return (await res.json());
+		  }
 
-          new ProductCard(
-          	"img/tabs/elite.jpg", 
-          	"elite",
-          	'Меню “Премиум”',
-          	'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
-          	550
-          	).render();
+		  getDataCard('http://localhost:3000/menu').then(data=>{
+			data.forEach(({img, altimg, title, descr, price}) => {
+				new ProductCard(img, altimg, title, descr, price).render();
+			})})
 
-          new ProductCard(
-          	"img/tabs/post.jpg", 
-          	"post",
-          	'Меню "Постное"',
-          	'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-          	430
-          	).render();
+        //   new ProductCard(
+        //   	"img/tabs/vegy.jpg", 
+        //   	"vegy",
+        //   	'Меню "Фитнес"',
+        //   	'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+        //   	229
+        //   	).render();
+
+        //   new ProductCard(
+        //   	"img/tabs/elite.jpg", 
+        //   	"elite",
+        //   	'Меню “Премиум”',
+        //   	'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
+        //   	550
+        //   	).render();
+
+        //   new ProductCard(
+        //   	"img/tabs/post.jpg", 
+        //   	"post",
+        //   	'Меню "Постное"',
+        //   	'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+        //   	430
+        //   	).render();
 
           //отправка данных из форм на сервер
 
@@ -217,12 +230,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
           }
 
           data.forEach(item =>{            
-            postData(item);
+            processingPostData(item);
           });
 
+		  const postData = async (url, data) => {
+			const res = await fetch(url, 
+                {method: 'POST', 
+                  headers:{
+                    'Content-Type': 'application/json'},
+                  body: data
+                })
+				return await res.json();
+		  }
 
-
-          function postData(form){
+          function processingPostData(form){
 
             form.addEventListener('submit', (e)=>{
               e.preventDefault();
@@ -235,7 +256,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
               `;
               form.insertAdjacentElement('afterend', statusMessage);
 
-              // const xhrequest = new XMLHttpRequest();
               const formData = new FormData(form);
 
               const jsonData = {};
@@ -243,20 +263,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 jsonData[key]=value;
               });
 
-              console.log(jsonData);
+              //console.log(JSON.stringify(jsonData));
 
-              fetch('server.php', 
-                {method: 'POST', 
-                  headers:{
-                    'Content-Type': 'application/json'},
-                  body: JSON.stringify(jsonData)
-                }).then(result=>result.text()).then(result => {
+              postData('http://localhost:3000/requests', JSON.stringify(jsonData))
+			  .then(result => {
                     console.log(result);
                     reverseBodyForm(message.success);
                     statusMessage.remove();
                   })
-                  .catch(() => {reverseBodyForm(message.failure)})
-                  .finally(() => {form.reset()});
+				  .catch(() => {reverseBodyForm(message.failure)})
+				  .finally(() => {form.reset()});
             });
             
             
