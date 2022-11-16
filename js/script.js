@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
    //timer
 
-   const dateBefore = '2022-11-21';
+   const dateBefore = '2022-11-22';
 
    const timeDifference = function(date){
    	const milliseconds = Date.parse(date) - Date.parse(new Date()),
@@ -306,6 +306,50 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
 
-          fetch('http://localhost:3000/menu').then(data=>data.json()).then(res=>console.log(res));
+          //slider
+
+          const slides = document.querySelectorAll('.offer__slide'),
+                buttonPrev = document.querySelector('.offer__slider-prev'),
+                buttonNext = document.querySelector('.offer__slider-next');
+          let current = document.querySelector('#current');
+          let total = document.querySelector('#total');
+
+          let index = 0;
+
+
+          
+          total.textContent = slides.length;
+
+          const nextSlide = function(i){
+            slides.forEach((item)=>{
+              
+              item.classList.add('hide');
+            });
+
+            slides[i].classList.remove('hide');
+            current.textContent = i + 1;
+          }
+          
+          nextSlide(index);
+
+          buttonPrev.addEventListener('click', (e)=>{
+            index--;
+            if(index < 0)
+            {
+              index = slides.length - 1;
+            }
+            nextSlide(index);
+          });
+
+          buttonNext.addEventListener('click', (e)=>{
+            index++;
+            if(index >= slides.length)
+            {
+              index = 0;
+            }
+            nextSlide(index);
+          });
+
+          
 
 });
