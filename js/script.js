@@ -309,6 +309,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
           //slider
 
           const slides = document.querySelectorAll('.offer__slide'),
+                slider = document.querySelector('.offer__slider'),
                 buttonPrev = document.querySelector('.offer__slider-prev'),
                 buttonNext = document.querySelector('.offer__slider-next'),
                 offerSliderWrapper = document.querySelector('.offer__slider-wrapper'),
@@ -340,6 +341,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
             item.style.width = width;
           });
 
+          slider.style.position = 'relative';
+
+          const indicators = document.createElement('ol'),
+                dots = [];
+
+          indicators.classList.add('carousel-indicators');
+
+          slider.append(indicators);
+
+          for(let i =0; i< slides.length; i++){
+            const dot = document.createElement('li');
+            dot.classList.add('dot');
+            dot.setAttribute('data-slide-to', i+1);
+            if(i==0){
+              dot.style.opacity = 1;
+            }
+            indicators.append(dot);
+            dots.push(dot);
+          }
+
+
           buttonNext.addEventListener('click', ()=>{
             if(offset == +width.slice(0, width.length-2) * (slides.length - 1)){
               offset = 0;
@@ -359,6 +381,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
             }else{
               current.textContent = index;
             }
+
+            dots.forEach((item) => {item.style.opacity = '.5'});
+            dots[index - 1].style.opacity = '1';
           });
 
           buttonPrev.addEventListener('click', ()=>{
@@ -380,6 +405,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
             }else{
               current.textContent = index;
             }
+            dots.forEach((item) => {item.style.opacity = '.5'});
+            dots[index - 1].style.opacity = '1';
+          });
+
+          dots.forEach((item)=>{
+            item.addEventListener('click',(e)=>{
+              const slideTo = e.target.getAttribute('data-slide-to');
+              index = slideTo;
+
+              offset = +width.slice(0, width.length-2) * (slideTo - 1);
+
+              innerSliderWrapper.style.transform = `translateX(-${offset}px)`;
+
+              if(slides.length<10){
+                current.textContent = `0${index}`;
+              }else{
+                current.textContent = index;
+              }
+
+              dots.forEach((item) => {item.style.opacity = '.5'});
+              dots[index - 1].style.opacity = '1';
+            });
           });
 
           // total.textContent = slides.length;
