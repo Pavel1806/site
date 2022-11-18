@@ -414,9 +414,41 @@ function reverseBodyForm(message){
         activityItems = document.querySelector('.calculating__choose_big').querySelectorAll('.calculating__choose-item'),
         result = document.querySelector('.calculating__result span').innerText;
   
-  let sex = 'female', height, weight, age, activity = 1.375, answer;
+  let sex , height, weight, age, activity, answer;
 
-  
+  function localStorageSetSex(item){
+    sexItems.forEach((item1)=>{
+      item1.classList.remove('calculating__choose-item_active');
+
+      if(item1.id == item){
+        item1.classList.add('calculating__choose-item_active');
+      }
+    });
+  }
+
+  function localStorageSetActivity(item){
+    activityItems.forEach((item1)=>{
+      item1.classList.remove('calculating__choose-item_active');
+
+      if(item1.getAttribute('data-activity') == item){
+        item1.classList.add('calculating__choose-item_active');
+      }
+  });
+  }
+
+  if(localStorage.getItem('sex')){
+    sex = localStorage.getItem('sex');
+    localStorageSetSex(sex);
+  }else{
+    sex = 'female';
+  }
+
+  if(localStorage.getItem('activity')){
+    activity = localStorage.getItem('activity');
+    localStorageSetActivity(activity);
+  }else{
+    activity = 1.375;
+  }
 
   const summ = ()=>{
     
@@ -446,10 +478,13 @@ function reverseBodyForm(message){
         if(item.id === 'male' || 'female'){
           if(item.id === 'male'){
             sex = item.id;
+            localStorage.setItem('sex', item.id);
           }else if(item.id === 'female'){
             sex = item.id;
+            localStorage.setItem('sex', item.id);
           }else{
             activity = +item.getAttribute('data-activity');
+            localStorage.setItem('activity', activity);
           }
         }else{
           activity = +item.getAttribute('data-activity');
