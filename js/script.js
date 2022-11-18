@@ -416,7 +416,10 @@ function reverseBodyForm(message){
   
   let sex = 'female', height, weight, age, activity = 1.375, answer;
 
+  
+
   const summ = ()=>{
+    
     if(sex == 'male'){
       answer = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age))*activity);
     }else{
@@ -426,7 +429,6 @@ function reverseBodyForm(message){
     if(!sex || !height || !weight || !age || !activity)
     {
       result='____';
-      
     }else{
       result = answer;
     }
@@ -444,18 +446,13 @@ function reverseBodyForm(message){
         if(item.id === 'male' || 'female'){
           if(item.id === 'male'){
             sex = item.id;
-            console.log(sex);
           }else if(item.id === 'female'){
             sex = item.id;
-            console.log(sex);
           }else{
             activity = +item.getAttribute('data-activity');
-            console.log(activity);
           }
-          
         }else{
-          activity = +item.data-activity;
-          console.log(activity);
+          activity = +item.getAttribute('data-activity');
         }
         item.classList.add('calculating__choose-item_active');
         summ();
@@ -465,8 +462,14 @@ function reverseBodyForm(message){
 
   const dataSize = (selector)=>{
     const input = document.querySelector(selector);
-    
     input.addEventListener('input',(e)=>{
+
+      if(input.value.match(/\D/g)){
+        input.style.border = '2px solid red';
+      }else{
+        input.style.border = 'none';
+      }
+
       switch(input.getAttribute('id')){
         case 'height': 
               height = +input.value;
